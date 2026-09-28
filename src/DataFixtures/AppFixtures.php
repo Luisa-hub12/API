@@ -3,51 +3,42 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
-use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    private const string PLAIN_PASSWORD = 'password123';
+    // le hacheur n'est pas construit ici, il est demandé au conteneur
     public function __construct(
         private readonly UserPasswordHasherInterface $hasher,
-    )
-    {
+    ) {
     }
 
+    /**
+     * Loads the three demo accounts the module works with.
+     */
     public function load(ObjectManager $manager): void
     {
+        $now = new \DateTimeImmutable();
 
-       // -- Users
-        $aliceUser = new User()
-            ->setEmail('alice@example.fr')
-            ->setCreatedAt(new DateTimeImmutable());
+        // Alice et Bob n'ont ni prénom ni nom : les deux champs sont optionnels
+        foreach (['alice@example.fr', 'bob@example.fr'] as $email) {
+            $user = new User();
+            $user->setEmail($email);
+            $user->setPassword($this->hasher->hashPassword($user, 'motdepasse'));
+            $user->setCreatedAt($now);
+            $manager->persist($user);
+        }
 
-        $password = $this->hasher->hashPassword($aliceUser, self::PLAIN_PASSWORD);
-        $aliceUser->setPassword($password);
-
-        $manager->persist($aliceUser);
-
-
-        $bobUser = new User()
-            ->setEmail('bob@example.fr')
-            ->setCreatedAt(new DateTimeImmutable());
-
-        $password = $this->hasher->hashPassword($bobUser, self::PLAIN_PASSWORD);
-        $bobUser->setPassword($password);
-        $manager->persist($bobUser);
-
-        $camilleUser = new User()
-            ->setFirstName('Camille')
-            ->setLastName("Aubert")
-            ->setEmail('camille.aubert@example.fr')
-            ->setCreatedAt(new DateTimeImmutable("2026-02-04T09:00:00"));
-
-        $password = $this->hasher->hashPassword($camilleUser, self::PLAIN_PASSWORD);
-        $camilleUser->setPassword($password);
-        $manager->persist($camilleUser);
+        // Camille porte la parité avec les maquettes du module de conception
+        $camille = new User();
+        $camille->setEmail('camille.aubert@example.fr');
+        $camille->setPassword($this->hasher->hashPassword($camille, 'motdepasse'));
+        $camille->setFirstName('Camille');
+        $camille->setLastName('Aubert');
+        $camille->setCreatedAt(new \DateTimeImmutable('2026-02-04'));
+        $manager->persist($camille);
 
         $manager->flush();
     }

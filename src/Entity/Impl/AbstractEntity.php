@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Entity\Impl;
 
 use App\Entity\User;
