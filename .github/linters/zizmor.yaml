@@ -1,6 +1,6 @@
----
-rules:
-  unpinned-uses:
-    config:
-      policies:
-        "*": ref-pin
+#---
+#rules:
+#  unpinned-uses:
+#    config:
+#      policies:
+#        "*": ref-pin
