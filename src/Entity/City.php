@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Entity;
+
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\QueryParameter;
+use App\Dto\City\CityListOutput;
+use App\Entity\Impl\AbstractEntity;
+use App\Repository\CityRepository;
+use App\State\City\CityCollectionProvider;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
+
+
+
+#[ApiResource(
+    operations: [
+        // GET /api/cities
+        new GetCollection(
+            paginationEnabled: false,
+            output: CityListOutput::class,
+            provider: CityCollectionProvider::class,
+            parameters: [
+                'q' => new QueryParameter(
+                    schema: ['type' => 'string'],
+                    description: 'Filtre textuel sur le nom de la ville. Insensivle à la casse et aux accents.',
+                ),
+                'limit' => new QueryParameter(
+                    schema: [
+                        'type' => 'integer',
+                        'minimum' => 1,
+                        'maximum' => 100,
+                        'default' => 20,
+                    ],
+                    description: 'Nombre maximum de villes retournées.',
+                ),
+            ]
+        ),
+    ]
+)]
+#[ORM\Entity(repositoryClass: CityRepository::class)]
+class City extends AbstractEntity
+{
+    #[ORM\Id]
+    #[ORM\Column(type: 'uuid')]
+    private Uuid $id;
+
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+
+    public function __construct()
+    {
+        $this->id = Uuid::v7();
+    }
+
+    public function getId(): Uuid
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+}
