@@ -11,6 +11,7 @@ use App\Repository\CityRepository;
 use App\State\City\CityCollectionProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use ApiPlatform\OpenApi\Model\Operation as OpenApiOperation;
 
 
 
@@ -21,6 +22,7 @@ use Symfony\Component\Uid\Uuid;
             paginationEnabled: false,
             output: CityListOutput::class,
             provider: CityCollectionProvider::class,
+            openapi: new OpenApiOperation(security: []),
             parameters: [
                 'q' => new QueryParameter(
                     schema: ['type' => 'string'],

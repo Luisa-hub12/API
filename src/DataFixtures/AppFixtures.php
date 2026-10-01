@@ -11,37 +11,43 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    // le hacheur n'est pas construit ici, il est demandé au conteneur
-    public function __construct(
-        private readonly UserPasswordHasherInterface $hasher,
-    ) {
-    }
 
-    /**
-     * Loads the three demo accounts the module works with.
-     */
+    private const PLAIN_PASSWORD = 'motdepasse';
+
+    public function __construct(
+        private readonly UserPasswordHasherInterface $hasher
+    ) {}
+
     public function load(ObjectManager $manager): void
     {
-        $now = new \DateTimeImmutable();
 
-        // Alice et Bob n'ont ni prénom ni nom : les deux champs sont optionnels
-        foreach (['alice@example.fr', 'bob@example.fr'] as $email) {
-            $user = new User();
-            $user->setEmail($email);
-            $user->setPassword($this->hasher->hashPassword($user, 'motdepasse'));
-            $user->setCreatedAt($now);
-            $manager->persist($user);
-        }
+        // #region Users
+        $alice = new User()
+            ->setEmail('alice@example.fr')
+            ->setCreatedAt(new DateTimeImmutable());
 
-        // Camille porte la parité avec les maquettes du module de conception
-        $camille = new User();
-        $camille->setEmail('camille.aubert@example.fr');
-        $camille->setPassword($this->hasher->hashPassword($camille, 'motdepasse'));
-        $camille->setFirstName('Camille');
-        $camille->setLastName('Aubert');
-        $camille->setCreatedAt(new \DateTimeImmutable('2026-02-04'));
+        $alice->setPassword($this->hasher->hashPassword($alice, self::PLAIN_PASSWORD));
+        $manager->persist($alice);
+
+        $bob = new User()
+            ->setEmail('bob@example.fr')
+            ->setCreatedAt(new DateTimeImmutable());
+
+        $bob->setPassword($this->hasher->hashPassword($bob, self::PLAIN_PASSWORD));
+        $manager->persist($bob);
+
+        $camille = new User()
+            ->setEmail('camille.aubert@example.fr')
+            ->setFirstName('Camille')
+            ->setLastName('Aubert')
+            ->setCreatedAt(new DateTimeImmutable('2026-02-04'));
+
+        $camille->setPassword($this->hasher->hashPassword($camille, self::PLAIN_PASSWORD));
         $manager->persist($camille);
 
+        // #endregion
+
+        // #region Cites
         $cities = [
             'Paris',
             'Lyon',
@@ -56,14 +62,15 @@ class AppFixtures extends Fixture
         ];
 
         foreach ($cities as $cityName) {
-            $city = new City()
+            $city = (new City())
                 ->setName($cityName)
                 ->setCreatedAt(new DateTimeImmutable());
 
             $manager->persist($city);
-
         }
+        //endregion
 
         $manager->flush();
+
     }
 }
