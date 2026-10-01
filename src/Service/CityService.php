@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Dto\City\CityListOutput;
 use App\Entity\City;
+use App\Exception\City\CityNotFoundException;
 use App\Repository\CityRepository;
 
 class CityService
@@ -36,6 +37,18 @@ class CityService
         $limit = min(self::MAX_RESULTS, max(1, $limit ?? self::DEFAULT_LIMIT));
 
         return $this->cityRepository->search($query, $limit);
+    }
+
+    /**
+     * @throws CityNotFoundException when no city carries this identifier
+     */
+    public function findOneById(Uuid $id): City {
+        $found = $this->cityRepository->find($id);
+
+        if (!$found) {
+            throw new CityNotFoundException();
+        }
+        return $found;
     }
 
 }
