@@ -1,9 +1,10 @@
 <?php
 
-namespace App\DTO\Trip;
+namespace App\Dto\Trip;
 
 use ApiPlatform\Metadata\ApiProperty;
 use App\Dto\City\CityListOutput;
+use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 
 class TripListOutput
@@ -36,7 +37,7 @@ class TripListOutput
             "format" => "date-time",
             "example" => "2021-01-01T00:00:00+00:00"
         ])]
-        public readonly \DateTimeImmutable $departureAt,
+        public readonly DateTimeImmutable $departureAt,
 
         #[ApiProperty(schema: [
             "type" => "integer",

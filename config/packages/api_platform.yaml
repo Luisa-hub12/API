@@ -16,6 +16,7 @@ api_platform:
         jsonproblem: ['application/problem+json']
     exception_to_status:
         App\Exception\User\EmailAlreadyUsedException: 409
+        App\Exception\City\CityNotFoundException: 422
     swagger:
         http_auth:
             bearerAuth:

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTO\User\UserDetailsOutput;
+namespace App\Dto\User\UserDetailsOutput;
 
 use ApiPlatform\Metadata\ApiProperty;
 use DateTimeImmutable;

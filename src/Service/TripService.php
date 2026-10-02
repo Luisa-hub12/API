@@ -2,9 +2,11 @@
 
 namespace App\Service;
 
-use App\DTO\Trip\TripListOutput;
-use App\DTO\Trip\TripSearchInput;
+use App\Dto\Trip\TripDetailsOutput;
+use App\Dto\Trip\TripListOutput;
+use App\Dto\Trip\TripSearchInput;
 use App\Entity\Trip;
+use App\Exception\Trip\TripNotFoundException;
 use App\Repository\TripRepository;
 use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
@@ -39,5 +41,34 @@ class TripService
             $trip->getDuration(),
             $trip->getPrice(),
         );
+    }
+    public function toDetails(Trip $trip): TripDetailsOutput
+    {
+        return new TripDetailsOutput(
+            id: $trip->getId(),
+            origin: $this->cityService->toList($trip->getDestination()),
+            destination: $this->cityService->toList($trip->getDestination()),
+            departureAt: $trip->getDepartureAt(),
+            duration: $trip->getDuration(),
+            price: $trip->getPrice(),
+            maxBaggagesWeightKg: $trip->getCatapultModel()->maxBaggageWeightKg(),
+            cataplutModel: $trip->getCatapultModel()->value,
+            boardingInfo: $trip->getBoardingInfo(),
+        );
+
+    }
+
+    /**
+     * @throws TripNotFoundException when no trip carries this identity.
+     */
+
+    public function findOneById(Uuid $id): Trip
+    {
+        $trip = $this->tripRepository->find($id);
+        if (null === $trip) {
+            throw new TripNotFoundException();
+        }
+        return $trip;
+
     }
 }
