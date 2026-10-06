@@ -31,9 +31,13 @@ class UserService
         );
 
     }
+    public function findOneByEmail(string $email): ?User
+    {
+        return $this->userRepository->findOneByEmail($email);
+    }
     public function register(UserRegisterInput $input): User {
 
-        $existingUser = $this->userRepository->findOneByEmail($input->email);
+        $existingUser = $this->findOneByEmail($input->email);
         if ($existingUser) {
             $this->domainLogger->error("User registration - conflict : user already used");
             throw new EmailAlreadyUsedException();
