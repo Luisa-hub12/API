@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Dto\User\UserDetailsOutput;
+namespace App\Dto\User;
 
 use ApiPlatform\Metadata\ApiProperty;
 use DateTimeImmutable;
@@ -48,5 +48,13 @@ class UserDetailsOutput{
             "example" => "2023-07-12T14:30:00+00:00"
         ])]
         public DateTimeImmutable $createdAt,
+
+        #[ApiProperty(schema: [
+            "type" => "string",
+            "description" => "L'URL de la photo de profil de l'utilisateur",
+            "format" => "uri",
+            "nullable" => true,
+        ])]
+        public null|string $profilePictureUrl,
     ){}
 }
